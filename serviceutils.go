@@ -37,14 +37,12 @@ func RestartService(serviceName string) error {
 	stopCmd := exec.Command("sudo", "systemctl", "stop", serviceName)
 	startCmd := exec.Command("sudo", "systemctl", "start", serviceName)
 
-	if err := stopCmd.Run(); err == nil {
-		time.Sleep(5 * time.Second)
-		if err := startCmd.Run(); err == nil {
-			return nil
-		} else {
-			return fmt.Errorf("can not start %s, error: %v", serviceName, err)
-		}
-	} else {
+	if err := stopCmd.Run(); err != nil {
 		return fmt.Errorf("can not stop %s, error: %v", serviceName, err)
 	}
+	time.Sleep(5 * time.Second)
+	if err := startCmd.Run(); err != nil {
+		return fmt.Errorf("can not start %s, error: %v", serviceName, err)
+	}
+	return nil
 }
